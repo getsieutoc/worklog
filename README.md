@@ -1,10 +1,8 @@
-# worklog
+# 📒 worklog
 
-We use this to track our work history, so in the future we can have a look.
+Minimalist log standard
 
-## The format
-
-We try to keep it simple
+## The standard
 
 ```
 [priority] [finish date]/[time spent]: [name] [unique-id]; [title]; [description]; [tags]
@@ -14,7 +12,7 @@ With some simple rules:
 
 - One record stays in one line. So `newline` character is the way we break them out.
 
-Some examples:
+## Examples:
 
 In our case, we use this:
 
@@ -31,11 +29,14 @@ We put this task into starter, nextjs, taijutsu and syva categories. The task pr
 
 ### Priority segment
 
-| Indicator  | Meaning |
-| ------------- | ------------- |
-| `*--`  | Low priority  |
-| `**-`  | Medium priority  |
-| `***`  | High priority  |
+| Indicator |     Meaning     |
+| --------- | -------------   |
+| `*--`     | Low priority    |
+| `**-`     | Medium priority |
+| `***`     | High priority   |
+
+> [!TIP]
+> You are free to adjust it to fit your needs, for example you can make it become 5 levels, like `***--` if you want.
 
 ### Finish date
 
@@ -45,12 +46,12 @@ For now we stick with simple `DD.MM.YYYY` format.
 
 We round up to the closest integer. Some special numbers might be used.
 
-| Indicator  | Meaning |
-| ------------- | ------------- |
-| `1`  | 1 hour  |
-| `2`  | 2 hours  |
-| `0`  | Not work  |
-| `999`  | Do not know  |
+| Indicator |   Meaning   |
+| --------- | ----------- |
+| `1`       | 1 hour      |
+| `2`       | 2 hours     |
+| `0`       | Not work    |
+| `999`     | Do not know |
 
 ### Name
 
@@ -58,7 +59,10 @@ We use `Firstname Lastname` format. For example `Sang Dang`.
 
 ### Unique ID
 
-It could be UUID, or user email. Do NOT mix!
+It could be UUID/CUID, or user email. Incremental integer also works.
+
+> [!IMPORTANT]
+> Do not mix! Use either email, or ID.
 
 ### Title
 
