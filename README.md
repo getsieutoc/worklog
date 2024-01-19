@@ -38,6 +38,24 @@ It allows for a comprehensive record of achievements and milestones. This not on
 
 When it comes to annual performance reviews, having a historical log provides tangible evidence of accomplishments. This, in turn, enables better self-assessment, clearer communication during reviews, and more informed goal-setting for the future.
 
+## How to use
+
+You can either use this template by:
+
+- Click the **"Use this template"** button and follow the instruction
+- Or using the script below:
+
+```bash
+pnpm dlx tiged websitesieutoc/worklog
+```
+
+Start editing the `WORKLOG` file.
+
+That's it!
+
+> [!TIP]
+> [tiged](https://github.com/tiged/tiged) is a community driven fork of degit, it makes copies of git repositories without history.
+
 ## Glossary
 
 ### Priority segment
