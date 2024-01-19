@@ -9,6 +9,7 @@ Minimalist log standard
 ```
 
 - One record stays in one line. So `newline` character is the way we break them out.
+- New record goes on top, push old records down. So we read the most recent log first.
 
 ## Examples:
 
