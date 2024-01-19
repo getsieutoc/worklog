@@ -1,4 +1,4 @@
-# worklog
+# 📒 worklog
 
 We use this to track our work history, so in the future we can have a look.
 
