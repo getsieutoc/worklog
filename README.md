@@ -10,6 +10,10 @@ We try to keep it simple
 [priority] [finish date]/[time spent]: [name] [unique-id]; [title]; [description]; [tags]
 ```
 
+With some simple rules:
+
+- One record stays in one line. So `newline` character is the way we break them out.
+
 Some examples:
 
 In our case, we use this:
