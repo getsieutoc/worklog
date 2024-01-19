@@ -72,7 +72,7 @@ We use `Firstname Lastname` format. For example `Sang Dang`.
 
 ### Unique ID
 
-It could be UUID/CUID, or user email. Incremental integer also works.
+The ID is for the worker identification. It could be UUID/CUID, or user email. Incremental integer also works. This is NOT the ID of the record.
 
 > [!IMPORTANT]
 > Do not mix! Use either email, or ID.
