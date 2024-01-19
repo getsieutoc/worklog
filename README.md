@@ -8,8 +8,6 @@ Minimalist log standard
 [priority] [finish date]/[time spent]: [name] [unique-id]; [title]; [description]; [tags]
 ```
 
-With some simple rules:
-
 - One record stays in one line. So `newline` character is the way we break them out.
 
 ## Examples:
@@ -24,6 +22,20 @@ Which can be translate like this:
 
 > Sang Dang uses the taijutsu template, prepare the starter code for Syva project, it also has the magic link login. This task supposes to be done at 25.1.2024, will take 01 hour to do.
 We put this task into starter, nextjs, taijutsu and syva categories. The task priority is medium.
+
+## Why?
+
+#### 🧠 Memory Retention
+
+Our brains are prone to forgetting details of daily routines. Maintaining a work log helps in preserving a detailed account of tasks, ensuring nothing significant is overlooked.
+
+#### 📈 Comprehensive Achievement Tracking
+
+It allows for a comprehensive record of achievements and milestones. This not only helps in recognizing individual accomplishments but also aids in identifying patterns of success over time.
+
+#### 🚀 Efficient Planning for Performance Reviews
+
+When it comes to annual performance reviews, having a historical log provides tangible evidence of accomplishments. This, in turn, enables better self-assessment, clearer communication during reviews, and more informed goal-setting for the future.
 
 ## Glossary
 
@@ -68,9 +80,16 @@ It could be UUID/CUID, or user email. Incremental integer also works.
 
 It's a string, should be shorter than 60 characters. Accepts almost every characters, except: `:` and `;`.
 
+> [!TIP]
+> It's best to use Title for project's name, or something can remind the main features you have developed.
+
 ### Description
 
 It's also a string, which can be longer. But should write it short and simple. Accepts almost every characters, except: `:` and `;`.
+
+> [!TIP]
+> Use Description to keep a quick snapshot of how your works impact.
+> For example "Improve 20% number of MAU" or "Reduce 50% of actions when using our app".
 
 ### Tags
 
