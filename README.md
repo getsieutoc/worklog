@@ -4,29 +4,29 @@ Minimalist log standard
 
 ## The standard
 
-```
+```worklog
 [priority] [finish date]/[time spent]: [name] [unique-id]; [title]; [description]; [tags]
 ```
 
 - One record stays in one line. So `newline` character is the way we break them out.
 - New record goes on top, push old records down. So we read the most recent log first.
 
-## Examples:
+## Examples
 
 In our case, we use this:
 
-```
+```worklog
 **- 25.01.2024/1: Sang Dang <sang@dang.to>; Prepare the Syva starter; Use the taijutsu template, add magic link login; starter,next.js,taijutsu,syva
 ```
 
 Which can be translate like this:
 
 > Sang Dang uses the taijutsu template, prepare the starter code for Syva project, it also has the magic link login. This task supposes to be done at 25.1.2024, will take 01 hour to do.
-We put this task into starter, nextjs, taijutsu and syva categories. The task priority is medium.
+> We put this task into starter, nextjs, taijutsu and syva categories. The task priority is medium.
 
 ## Why?
 
-#### 🧠 Memory Retention
+### 🧠 Memory Retention
 
 Our brains are prone to forgetting details of daily routines. Maintaining a work log helps in preserving a detailed account of tasks, ensuring nothing significant is overlooked.
 
@@ -53,15 +53,14 @@ Start editing the `WORKLOG` file.
 
 That's it!
 
-> [!TIP]
-> [tiged](https://github.com/tiged/tiged) is a community driven fork of degit, it makes copies of git repositories without history.
+> [!TIP] > [tiged](https://github.com/tiged/tiged) is a community driven fork of degit, it makes copies of git repositories without history.
 
 ## Glossary
 
 ### Priority segment
 
-| Indicator |     Meaning     |
-| --------- | -------------   |
+| Indicator | Meaning         |
+| --------- | --------------- |
 | `*--`     | Low priority    |
 | `**-`     | Medium priority |
 | `***`     | High priority   |
@@ -77,12 +76,12 @@ For now we stick with simple `DD.MM.YYYY` format.
 
 We round up to the closest integer. Some special numbers might be used.
 
-| Indicator |   Meaning   |
+| Indicator | Meaning     |
 | --------- | ----------- |
 | `1`       | 1 hour      |
 | `2`       | 2 hours     |
 | `0`       | Not work    |
-| `999`     | Do not know |
+| `-`       | Do not know |
 
 ### Name
 
@@ -123,11 +122,10 @@ Used for sorting, filtering and categorize in the future. They have some simple 
 
 We simply leave it empty, for example the log below does not have `description` and `tags`:
 
-```
+```worklog
 **- 31.01.2024/1: Sang Dang <sang@dang.to>; Upgrade Nodejs;;
 ```
 
 ## Contributing
 
 Feel free to open an issue to ask us anything. PR is welcome but we should discuss first to avoid wasting time.
-
