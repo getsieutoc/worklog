@@ -23,7 +23,7 @@ func main() {
 
 // General stuff for styling the view
 var (
-	wordStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("211"))
+	// wordStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("211"))
 	subtleStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
 	itemStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212"))
 	mainStyle     = lipgloss.NewStyle().MarginLeft(2)
@@ -32,7 +32,7 @@ var (
 type model struct {
 	choices []string
 	cursor  int
-	chosen  bool
+	chosen  string
 	quit    bool
 }
 
@@ -51,7 +51,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Hand off the message and model to the appropriate update function for the
 	// appropriate view based on the current state.
-	if !m.chosen {
+	if m.chosen == "" {
 		return updateChoices(msg, m)
 	}
 
@@ -65,7 +65,7 @@ func (m model) View() string {
 		return "\n  See you later!\n\n"
 	}
 
-	if !m.chosen {
+	if m.chosen == "" {
 		s = renderChoices(m)
 	} else {
 		s = renderChosenView(m)
@@ -87,8 +87,11 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 			if m.cursor > 0 {
 				m.cursor--
 			}
+		case "b":
+			m.chosen = ""
+      return m, nil
 		case "enter":
-			m.chosen = true
+			m.chosen = m.choices[m.cursor]
 			return m, nil
 		}
 	}
@@ -121,13 +124,13 @@ func renderChoices(m model) string {
 func renderChosenView(m model) string {
 	var msg string
 
-	switch m.cursor {
-	case 0:
+	switch m.chosen {
+	case m.choices[0]:
 		msg = fmt.Sprintln("Render input")
-	case 1:
+	case m.choices[1]:
 		msg = fmt.Sprintln("Render list of old logs")
 	default:
-		msg = fmt.Sprintf("It’s always good to see friends.\n\nFetching %s and %s...", wordStyle.Render("social-skills"), wordStyle.Render("conversationutils"))
+		msg = fmt.Sprintf("Unknown choice: %s", m.chosen)
 	}
 
 	return msg + "\n\n"
@@ -144,7 +147,7 @@ func initModel() model {
 	return model{
 		choices: []string{"Add new log", "View logs"},
 		cursor:  0,
-		chosen:  false,
+		chosen:  "",
 		quit:    false,
 	}
 }
