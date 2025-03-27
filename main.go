@@ -15,17 +15,24 @@ func main() {
 	}
 }
 
+
+const (
+	hotPink  = lipgloss.Color("#FF06B7")
+	darkGray = lipgloss.Color("#767676")
+)
+
+
 // Styles for the UI
 var (
-	subtleStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
+	subtleStyle = lipgloss.NewStyle().Foreground(darkGray)
 	itemStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("212"))
 	mainStyle   = lipgloss.NewStyle().MarginLeft(2)
 
 	// Form styles
-	labelStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("69"))
-	inputStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("255"))
-	focusedStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Bold(true)
-	textareaStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("255"))
+	labelStyle    = lipgloss.NewStyle().Foreground(hotPink)
+	// inputStyle    = lipgloss.NewStyle().Foreground(hotPink)
+	// focusedStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Bold(true)
+	// textareaStyle = lipgloss.NewStyle().Foreground(darkGray)
 )
 
 type model struct {
@@ -93,14 +100,8 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 			}
 		case "enter":
 			m.chosen = m.choices[m.cursor]
-			if m.chosen == "Add new log" {
-				m.newLogModel = &NewLogModel{
-					title:       "",
-					description: "",
-					focusIndex:  0,
-					titleCursor: 0,
-					descCursor:  0,
-				}
+			if m.chosen == m.choices[0] { // "Add new log"
+			m.newLogModel = InitNewLogModel()
 			}
 			return m, nil
 		}
@@ -110,34 +111,14 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 
 // Update loop for the chosen view
 func updateChosen(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
-	if m.newLogModel == nil {
-		return m, nil
-	}
-
-	if msg, ok := msg.(tea.KeyMsg); ok {
-		switch msg.String() {
-		case "tab":
-			m.newLogModel.focusIndex = (m.newLogModel.focusIndex + 1) % 2
-		case "shift+tab":
-			m.newLogModel.focusIndex = (m.newLogModel.focusIndex - 1)
-			if m.newLogModel.focusIndex < 0 {
-				m.newLogModel.focusIndex = 1
-			}
-		case "enter":
-			if m.newLogModel.focusIndex == 1 {
-				// TODO: Save the log entry
-				m.chosen = ""
-				m.newLogModel = nil
-				return m, nil
-			}
-		default:
-			// Handle typing in the focused field
-			if m.newLogModel.focusIndex == 0 {
-				m.newLogModel.title = handleInput(msg.String(), m.newLogModel.title, &m.newLogModel.titleCursor)
-			} else {
-				m.newLogModel.description = handleInput(msg.String(), m.newLogModel.description, &m.newLogModel.descCursor)
-			}
+	if m.newLogModel != nil {
+		var cmd tea.Cmd
+		m.newLogModel, cmd = UpdateNewLog(msg, m.newLogModel)
+		if m.newLogModel == nil {
+			m.chosen = ""
+			return m, cmd
 		}
+		return m, cmd
 	}
 	return m, nil
 }
@@ -195,37 +176,7 @@ func renderForm(m model) string {
 	if m.newLogModel == nil {
 		return ""
 	}
-
-	var s string
-
-	// Title field
-	titleLabel := labelStyle.Render("Title:")
-	titleInput := m.newLogModel.title
-	if m.newLogModel.focusIndex == 0 {
-		titleInput = focusedStyle.Render(titleInput + "█")
-	} else {
-		titleInput = inputStyle.Render(titleInput)
-	}
-	s += fmt.Sprintf("%s %s\n\n", titleLabel, titleInput)
-
-	// Description field
-	descLabel := labelStyle.Render("Description:")
-	descInput := m.newLogModel.description
-	if m.newLogModel.focusIndex == 1 {
-		descInput = focusedStyle.Render(descInput + "█")
-	} else {
-		descInput = textareaStyle.Render(descInput)
-	}
-	s += fmt.Sprintf("%s\n%s\n\n", descLabel, descInput)
-
-	// Help text
-	s += subtleStyle.Render("tab: next field") + ", " +
-		subtleStyle.Render("shift+tab: prev field") + ", " +
-		subtleStyle.Render("enter: save") + ", " +
-		subtleStyle.Render("b: back") + ", " +
-		subtleStyle.Render("q: quit")
-
-	return s
+	return RenderForm(m.newLogModel)
 }
 
 func item(label string, selected bool) string {
