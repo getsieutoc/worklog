@@ -13,27 +13,27 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-
 func main() {
-	initialModel := model{0, false, false}
-	p := tea.NewProgram(initialModel)
+	p := tea.NewProgram(initModel())
+
 	if _, err := p.Run(); err != nil {
-		fmt.Println("could not start program:", err)
+		fmt.Println("Could not start program:", err)
 	}
 }
 
 // General stuff for styling the view
 var (
-	keywordStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("211"))
+	wordStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("211"))
 	subtleStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
-	checkboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212"))
+	itemStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212"))
 	mainStyle     = lipgloss.NewStyle().MarginLeft(2)
 )
 
 type model struct {
-	cursor   int
-	selected   bool
-	quit bool
+	choices []string
+	cursor  int
+	chosen  bool
+	quit    bool
 }
 
 func (m model) Init() tea.Cmd {
@@ -51,7 +51,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Hand off the message and model to the appropriate update function for the
 	// appropriate view based on the current state.
-	if !m.selected {
+	if !m.chosen {
 		return updateChoices(msg, m)
 	}
 
@@ -65,10 +65,10 @@ func (m model) View() string {
 		return "\n  See you later!\n\n"
 	}
 
-	if !m.selected {
-		s = choicesView(m)
+	if !m.chosen {
+		s = renderChoices(m)
 	} else {
-		s = chosenView(m)
+		s = renderChosenView(m)
 	}
 
 	return mainStyle.Render("\n" + s + "\n\n")
@@ -80,59 +80,54 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "j", "down":
-			m.cursor++
-			if m.cursor > 3 {
-				m.cursor = 3
+			if m.cursor < len(m.choices)-1 {
+				m.cursor++
 			}
 		case "k", "up":
-			m.cursor--
-			if m.cursor < 0 {
-				m.cursor = 0
+			if m.cursor > 0 {
+				m.cursor--
 			}
 		case "enter":
-			m.selected = true
+			m.chosen = true
 			return m, nil
 		}
 	}
 	return m, nil
 }
 
-// Sub-views
-
 // The first view, where you're choosing a task
-func choicesView(m model) string {
-	c := m.cursor
-
+func renderChoices(m model) string {
 	tpl := "What to do today?\n\n"
-	tpl += "%s\n\n"
+
+	for i, choice := range m.choices {
+		tpl += fmt.Sprintf(
+			"%s\n",
+			item(choice, m.cursor == i),
+		)
+	}
+
+	tpl += "\n"
+
 	tpl += subtleStyle.Render("j/k, up/down: select") + ", " +
 		subtleStyle.Render("enter: choose") + ", " +
 		subtleStyle.Render("q, esc: quit")
 
-	choices := fmt.Sprintf(
-		"%s\n%s\n%s\n%s",
-		item("Plant carrots", c == 0),
-		item("Go to the market", c == 1),
-		item("Read something", c == 2),
-		item("See friends", c == 3),
-	)
+	tpl += "\n"
 
-	return fmt.Sprintf(tpl, choices)
+	return tpl
 }
 
 // The second view, after a task has been chosen
-func chosenView(m model) string {
+func renderChosenView(m model) string {
 	var msg string
 
 	switch m.cursor {
 	case 0:
-		msg = fmt.Sprintf("Carrot planting?\n\nCool, we'll need %s and %s...", keywordStyle.Render("libgarden"), keywordStyle.Render("vegeutils"))
+		msg = fmt.Sprintln("Render input")
 	case 1:
-		msg = fmt.Sprintf("A trip to the market?\n\nOkay, then we should install %s and %s...", keywordStyle.Render("marketkit"), keywordStyle.Render("libshopping"))
-	case 2:
-		msg = fmt.Sprintf("Reading time?\n\nOkay, cool, then we’ll need a library. Yes, an %s.", keywordStyle.Render("actual library"))
+		msg = fmt.Sprintln("Render list of old logs")
 	default:
-		msg = fmt.Sprintf("It’s always good to see friends.\n\nFetching %s and %s...", keywordStyle.Render("social-skills"), keywordStyle.Render("conversationutils"))
+		msg = fmt.Sprintf("It’s always good to see friends.\n\nFetching %s and %s...", wordStyle.Render("social-skills"), wordStyle.Render("conversationutils"))
 	}
 
 	return msg + "\n\n"
@@ -140,7 +135,16 @@ func chosenView(m model) string {
 
 func item(label string, selected bool) string {
 	if selected {
-		return checkboxStyle.Render("[x] " + label)
+		return itemStyle.Render(" • " + label)
 	}
-	return fmt.Sprintf("[ ] %s", label)
+	return fmt.Sprintf("   %s", label)
+}
+
+func initModel() model {
+	return model{
+		choices: []string{"Add new log", "View logs"},
+		cursor:  0,
+		chosen:  false,
+		quit:    false,
+	}
 }
