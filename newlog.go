@@ -22,14 +22,14 @@ func InitNewLogModel() *NewLogModel {
 	inputs[0].Placeholder = "Enter title"
 	inputs[0].Focus()
 	inputs[0].CharLimit = 100
-	inputs[0].Width = 30
+	inputs[0].Width = 80
 	inputs[0].Prompt = ""
 
 	// Description input
 	inputs[1] = textinput.New()
 	inputs[1].Placeholder = "Enter description"
 	inputs[1].CharLimit = 500
-	inputs[1].Width = 50
+	inputs[1].Width = 80
 	inputs[1].Prompt = ""
 
 	return &NewLogModel{
@@ -57,7 +57,7 @@ func UpdateNewLog(msg tea.Msg, m *NewLogModel) (*NewLogModel, tea.Cmd) {
 				return m, tea.Quit
 			}
 		}
-		
+
 		// Update focus
 		for i := range m.inputs {
 			m.inputs[i].Blur()
@@ -88,11 +88,12 @@ func RenderForm(m *NewLogModel) string {
 	s += fmt.Sprintf("%s\n%s\n\n", descLabel, descInput)
 
 	// Help text
-	s += subtleStyle.Render("tab: next field") + ", " +
-		subtleStyle.Render("shift+tab: prev field") + ", " +
-		subtleStyle.Render("enter: save") + ", " +
-		subtleStyle.Render("b: back") + ", " +
-		subtleStyle.Render("q: quit")
+	screenActions := map[string]string{
+		"tab":         "next field",
+		"shift+tab":   "prev field",
+		"enter":       "save",
+	}
+	s += "\n" + RenderBottomMenu(screenActions)
 
 	return s
 }

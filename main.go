@@ -15,12 +15,10 @@ func main() {
 	}
 }
 
-
 const (
 	hotPink  = lipgloss.Color("#FF06B7")
 	darkGray = lipgloss.Color("#767676")
 )
-
 
 // Styles for the UI
 var (
@@ -29,18 +27,19 @@ var (
 	mainStyle   = lipgloss.NewStyle().MarginLeft(2)
 
 	// Form styles
-	labelStyle    = lipgloss.NewStyle().Foreground(hotPink)
+	labelStyle = lipgloss.NewStyle().Foreground(hotPink)
 	// inputStyle    = lipgloss.NewStyle().Foreground(hotPink)
 	// focusedStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Bold(true)
 	// textareaStyle = lipgloss.NewStyle().Foreground(darkGray)
 )
 
 type model struct {
-	choices    []string
-	cursor     int
-	chosen     string
-	quit       bool
+	choices     []string
+	cursor      int
+	chosen      string
+	quit        bool
 	newLogModel *NewLogModel
+	focus       FocusManager
 }
 
 func (m model) Init() tea.Cmd {
@@ -48,6 +47,7 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Handle application-specific commands first
 	if msg, ok := msg.(tea.KeyMsg); ok {
 		k := msg.String()
 		if k == "q" || k == "esc" || k == "ctrl+c" {
@@ -58,6 +58,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.chosen = ""
 			return m, nil
 		}
+	}
+
+	// Then let the focus manager handle navigation events
+	if cmd := m.focus.Update(msg); cmd != nil {
+		return m, cmd
 	}
 
 	// Hand off the message and model to the appropriate update function for the
@@ -101,7 +106,7 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 		case "enter":
 			m.chosen = m.choices[m.cursor]
 			if m.chosen == m.choices[0] { // "Add new log"
-			m.newLogModel = InitNewLogModel()
+				m.newLogModel = InitNewLogModel()
 			}
 			return m, nil
 		}
@@ -123,41 +128,36 @@ func updateChosen(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func handleInput(key, text string, cursor *int) string {
-	if key == "backspace" && len(text) > 0 && *cursor > 0 {
-		text = text[:*cursor-1] + text[*cursor:]
-		*cursor--
-	} else if len(key) == 1 { // Single character
-		if *cursor == len(text) {
-			text += key
-		} else {
-			text = text[:*cursor] + key + text[*cursor:]
-		}
-		*cursor++
-	}
-	return text
-}
-
 // The first view, where you're choosing a task
 func renderChoices(m model) string {
-	tpl := "What to do today?\n\n"
+	s := "What to do today?\n\n"
 
+	// Render main menu with focus indication
+	menuStyle := lipgloss.NewStyle()
+	if m.focus.currentArea == MainMenu {
+		menuStyle = menuStyle.Border(lipgloss.RoundedBorder()).BorderForeground(hotPink)
+	}
+
+	menuContent := ""
 	for i, choice := range m.choices {
-		tpl += fmt.Sprintf(
+		menuContent += fmt.Sprintf(
 			"%s\n",
 			item(choice, m.cursor == i),
 		)
 	}
+	s += menuStyle.Render(menuContent)
 
-	tpl += "\n"
+	// Render static bottom navigation
+	screenActions := map[string]string{
+		"j/k, up/down": "select",
+		"enter":        "choose",
+	}
+	navContent := RenderBottomMenu(screenActions)
+	s += "\n" + subtleStyle.Render(navContent)
 
-	tpl += subtleStyle.Render("j/k, up/down: select") + ", " +
-		subtleStyle.Render("enter: choose") + ", " +
-		subtleStyle.Render("q, esc: quit")
+	s += "\n"
 
-	tpl += "\n"
-
-	return tpl
+	return s
 }
 
 // The second view, after a task has been chosen
@@ -174,7 +174,7 @@ func renderChosenView(m model) string {
 
 func renderForm(m model) string {
 	if m.newLogModel == nil {
-		return ""
+		return "Error: newLogModel was not initialized.\n\n"
 	}
 	return RenderForm(m.newLogModel)
 }
@@ -193,5 +193,6 @@ func initModel() model {
 		chosen:      "",
 		quit:        false,
 		newLogModel: nil,
+		focus:       NewFocusManager(),
 	}
 }
