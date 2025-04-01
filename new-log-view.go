@@ -16,20 +16,20 @@ type NewLogModel struct {
 // initNewLogModel creates a new instance of NewLogModel
 func InitNewLogModel() *NewLogModel {
 	inputs := make([]textinput.Model, 2)
-	
+
 	// Title input
 	inputs[0] = textinput.New()
 	inputs[0].Placeholder = "Enter title"
 	inputs[0].Focus()
 	inputs[0].CharLimit = 100
-	inputs[0].Width = 80
+	inputs[0].Width = 110
 	inputs[0].Prompt = ""
 
 	// Description input
 	inputs[1] = textinput.New()
 	inputs[1].Placeholder = "Enter description"
 	inputs[1].CharLimit = 500
-	inputs[1].Width = 80
+	inputs[1].Width = 110
 	inputs[1].Prompt = ""
 
 	return &NewLogModel{
@@ -89,9 +89,9 @@ func RenderForm(m *NewLogModel) string {
 
 	// Help text
 	screenActions := map[string]string{
-		"tab":         "next field",
-		"shift+tab":   "prev field",
-		"enter":       "save",
+		"tab":       "next field",
+		"shift+tab": "prev field",
+		"enter":     "save",
 	}
 	s += "\n" + RenderBottomMenu(screenActions)
 
